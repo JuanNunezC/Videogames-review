@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { searchGames } from "../api";
 
 function Header() {
@@ -8,8 +8,9 @@ function Header() {
   const handleChange = async (e) => {
     const value = e.target.value;
     setSearch(value);
+    console.log("Input value:", value);
 
-    if (value.length > 5) {
+    if (value.length >= 5) {
       try {
         const results = await searchGames(value);
         setGames(results);
@@ -20,6 +21,10 @@ function Header() {
       setGames([]);
     }
   };
+
+  useEffect(() => {
+    console.log("Games state changed:", games);
+  }, [games]);
 
   return (
     <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
@@ -45,6 +50,26 @@ function Header() {
             maxLength={60}
             className="bg-gray-700 text-white pl-10 px-4 py-4 placeholder-gray-400 w-full rounded-full"
           />
+          {games.length > 0 && (
+            <ul className="absolute z-10 bg-gray-800 w-full mt-2 rounded shadow-lg">
+              {games.map((game) => (
+                <li
+                  key={game.id}
+                  className="p-2 text-white hover:bg-gray-700 cursor-pointer flex items-center gap-3"
+                >
+                  {game.cover_url && (
+                    <img
+                      src={game.cover_url}
+                      alt={game.name}
+                      className="w-10 h-14 object-cover rounded"
+                      loading="lazy"
+                    />
+                  )}
+                  <span>{game.name}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
       <div className="ml-8 text-white font-semibold cursor-pointer">Log in</div>
