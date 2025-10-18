@@ -1,6 +1,6 @@
-export async function searchGames(query) {
+export async function searchGames(query, { signal } = {}) {
   const q = encodeURIComponent(query.trim());
-  const response = await fetch(`/api/search-games?query=${q}`);
+  const response = await fetch(`/api/search-games?query=${q}`, { signal });
   if (!response.ok) {
     const text = await response.text();
     throw new Error("API request failed");

@@ -1,35 +1,66 @@
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { searchGames } from "../api";
 
 function Header() {
   const [search, setSearch] = useState("");
   const [games, setGames] = useState([]);
+  const controllerRef = useRef(null);
+  const wrapperRef = useRef(null);
 
-  const handleChange = async (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    console.log("Input value:", value);
-
-    if (value.length >= 5) {
-      try {
-        const results = await searchGames(value);
-        setGames(results);
-      } catch (error) {
+  //close search results or dropdown when clicking outside the input
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setGames([]);
       }
-    } else {
-      setGames([]);
-    }
-  };
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
+  //debounce search input
   useEffect(() => {
-    console.log("Games state changed:", games);
-  }, [games]);
+    const query = search.trim();
+    // if query input is less than 5 characters, do not search
+    if (query.length < 5) {
+      //clear results if query is less than 5 characters
+      setGames([]);
+      controllerRef.current?.abort();
+      return;
+    }
+
+    controllerRef.current?.abort();
+    const controller = new AbortController();
+    controllerRef.current = controller;
+
+    const timer = setTimeout(() => {
+      (async () => {
+        try {
+          const results = await searchGames(query, {
+            signal: controller.signal,
+          });
+          setGames(results);
+        } catch (err) {
+          // ignora cancelaciones; limpia en otros errores
+          if (err?.name !== "AbortError") setGames([]);
+        }
+      })();
+    }, 350);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [search]);
+
+  const handleChange = (e) => {
+    setSearch(e.target.value);
+  };
 
   return (
     <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
       <div className="flex-1 flex justify-center">
-        <div className="relative w-full max-w-md">
+        <div ref={wrapperRef} className="relative w-full max-w-md">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
             <svg
               className="h-5 w-5 text-gray-400"
@@ -51,11 +82,11 @@ function Header() {
             className="bg-gray-700 text-white pl-10 px-4 py-4 placeholder-gray-400 w-full rounded-full"
           />
           {games.length > 0 && (
-            <ul className="absolute z-10 bg-gray-800 w-full mt-2 rounded shadow-lg">
+            <ul className="absolute z-10 bg-gray-800 w-full mt-2 rounded shadow-lg max-h-48 overflow-y-auto">
               {games.map((game) => (
                 <li
                   key={game.id}
-                  className="p-2 text-white hover:bg-gray-700 cursor-pointer flex items-center gap-3"
+                  className="h-16 p-2 text-white hover:bg-gray-700 cursor-pointer flex items-center gap-3"
                 >
                   {game.cover_url && (
                     <img
