@@ -1,16 +1,19 @@
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { searchGames } from "../api";
+import { Link, useNavigate } from "react-router";
 
 function Header() {
   const [search, setSearch] = useState("");
   const [games, setGames] = useState([]);
   const controllerRef = useRef(null);
   const wrapperRef = useRef(null);
+  const navigate = useNavigate();
 
   //close search results or dropdown when clicking outside the input
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
+        //clears the search results when clicking outside
         setGames([]);
       }
     };
@@ -57,6 +60,13 @@ function Header() {
     setSearch(e.target.value);
   };
 
+  const handleSelect = (game) => {
+    navigate(`/game/${game.id}`, {
+      state: { name: game.name, cover_url: game.cover_url },
+    });
+    setGames([]);
+  };
+
   return (
     <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
       <div className="flex-1 flex justify-center">
@@ -86,17 +96,25 @@ function Header() {
               {games.map((game) => (
                 <li
                   key={game.id}
-                  className="h-16 p-2 text-white hover:bg-gray-700 cursor-pointer flex items-center gap-3"
+                  className="h-16 p-2 text-white hover:bg-gray-700
+                  cursor-pointer flex items-center gap-3"
                 >
-                  {game.cover_url && (
-                    <img
-                      src={game.cover_url}
-                      alt={game.name}
-                      className="w-10 h-14 object-cover rounded"
-                      loading="lazy"
-                    />
-                  )}
-                  <span>{game.name}</span>
+                  <Link
+                    to={`/game/${game.id}`}
+                    state={{ name: game.name, cover_url: game.cover_url }}
+                    onClick={() => setGames([])} // closes the dropdown
+                    className="flex items-center gap-3 h-16 p-2 text-white hover:bg-gray-700 w-full"
+                  >
+                    {game.cover_url && (
+                      <img
+                        src={game.cover_url}
+                        alt={game.name}
+                        className="w-10 h-14 object-cover rounded"
+                        loading="lazy"
+                      />
+                    )}
+                    <span>{game.name}</span>
+                  </Link>
                 </li>
               ))}
             </ul>
