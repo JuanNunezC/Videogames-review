@@ -1,1 +1,22 @@
 @import "tailwindcss";
+
+@keyframes star-pop {
+  0% {
+    transform: scale(1.5);
+    color: rgb(250 204 21);
+  } /* yellow-400 */
+  60% {
+    transform: scale(1.1);
+    color: rgb(234 179 8);
+  } /* yellow-500 */
+  100% {
+    transform: scale(1);
+    color: rgb(250 204 21);
+  } /* yellow-400 */
+}
+
+.star-pop {
+  animation: star-pop 180ms ease-out;
+  transform-origin: center;
+  will-change: transform, color;
+}
