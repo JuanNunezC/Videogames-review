@@ -1,7 +1,8 @@
-import Header from "./components/Header";
+import Header from "./components/pages/Header";
 import "./App.css";
 import { Outlet, Route, Routes } from "react-router";
-import RateGame from "./components/RateGame";
+import RateGame from "./components/pages/RateGame";
+import LoginPage from "./components/auth/LoginPage";
 
 function Layout() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <Route element={<Layout />}>
         <Route path="/"></Route>
         <Route path="/game/:id" element={<RateGame />}></Route>
+        <Route path="/Login" element={<LoginPage />}></Route>
       </Route>
     </Routes>
   );

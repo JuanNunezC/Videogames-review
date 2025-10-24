@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { searchGames } from "../api";
+import { searchGames } from "../../api";
 import { Link, useNavigate } from "react-router";
 
 function Header() {
@@ -121,7 +121,9 @@ function Header() {
           )}
         </div>
       </div>
-      <div className="ml-8 text-white font-semibold cursor-pointer">Log in</div>
+      <Link to="/Login" className="text-white font-bold ">
+        Log in
+      </Link>
     </div>
   );
 }
