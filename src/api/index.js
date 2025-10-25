@@ -1,6 +1,6 @@
 export async function searchGames(query, { signal } = {}) {
   const q = encodeURIComponent(query.trim());
-  const response = await fetch(`/api/search-games?query=${q}`, { signal });
+  const response = await fetch(`/api/search-games/?query=${q}`, { signal });
   if (!response.ok) {
     const text = await response.text();
     throw new Error("API request failed");
@@ -10,7 +10,7 @@ export async function searchGames(query, { signal } = {}) {
 }
 
 export async function GetGameById(id, { signal } = {}) {
-  const response = await fetch(`/api/game/${id}`, { signal });
+  const response = await fetch(`/api/game/${id}/`, { signal });
 
   if (!response.ok) {
     const text = await response.text();
@@ -20,22 +20,27 @@ export async function GetGameById(id, { signal } = {}) {
   return data;
 }
 
+function getCsrf() {
+  return (
+    document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("csrftoken="))
+      ?.split("=")[1] || ""
+  );
+}
+
 export async function ensureCsrf() {
-  await fetch("/api/auth/csrf", { credentials: "include" });
+  await fetch("/api/auth/csrf/", { credentials: "include" });
 }
 
 export async function createSession(token) {
-  const csrfToken =
-    document.cookie
-      .split(";")
-      .find((cookie) => cookie.startsWith("csrftoken="))
-      ?.split("=")[1] || "";
-
-  const response = await fetch("/api/auth/session", {
+  const csrfToken = getCsrf();
+  const response = await fetch("/api/auth/session/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": csrfToken || "",
+      "X-CSRFToken": csrfToken,
     },
     credentials: "include",
     body: JSON.stringify({ token }),
@@ -48,17 +53,12 @@ export async function createSession(token) {
 }
 
 export async function logoutSession() {
-  const csrfToken =
-    document.cookie
-      .split(";")
-      .find((cookie) => cookie.startsWith("csrftoken="))
-      ?.split("=")[1] || "";
-
-  const response = await fetch("/api/auth/logout", {
+  const csrfToken = getCsrf();
+  const response = await fetch("/api/auth/logout/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-CSRFToken": csrfToken || "",
+      "X-CSRFToken": csrfToken,
     },
     credentials: "include",
   });
