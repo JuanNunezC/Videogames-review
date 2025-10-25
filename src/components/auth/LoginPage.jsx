@@ -2,8 +2,8 @@ import { signInWithPopup } from "firebase/auth";
 import { useState } from "react";
 import { auth, googleProvider } from "../../firebase";
 import { useNavigate } from "react-router";
-import Button from "../../ui/Button";
 import GoogleButton from "../../ui/GoogleButton";
+import { createSession, ensureCsrf } from "../../api";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
