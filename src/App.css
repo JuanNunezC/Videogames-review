@@ -1,14 +1,17 @@
 @import "tailwindcss";
 
 @keyframes star-pop {
+  /* The star gets bigger and changes color to a darker yellow*/
   0% {
     transform: scale(1.5);
     color: rgb(250 204 21);
-  } /* yellow-400 */
+  }
+  /* It gives like a pulse effect */
   60% {
     transform: scale(1.1);
     color: rgb(234 179 8);
-  } /* yellow-500 */
+  }
+  /* It returns to the original size and color */
   100% {
     transform: scale(1);
     color: rgb(250 204 21);
