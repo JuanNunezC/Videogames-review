@@ -1,13 +1,38 @@
 import { useEffect, useRef, useState } from "react";
-import { searchGames } from "../../api";
+import {
+  createSession,
+  ensureCsrf,
+  logoutSession,
+  searchGames,
+} from "../../api";
 import { Link, useNavigate } from "react-router";
+import GoogleButton from "../../ui/GoogleButton";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../firebase";
+import Button from "../../ui/Button";
 
 function Header() {
   const [search, setSearch] = useState("");
+  const [error, setError] = useState("");
   const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
   const controllerRef = useRef(null);
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  //close dropdown menu when clicking outside the login container
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!menuRef.current) return;
+      //if its click outside the menu, close it
+      if (!menuRef.current.contains(e.target)) setMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
 
   //close search results or dropdown when clicking outside the input
   useEffect(() => {
@@ -58,6 +83,43 @@ function Header() {
 
   const handleChange = (e) => {
     setSearch(e.target.value);
+  };
+
+  const handleLogin = async () => {
+    try {
+      setError("");
+      setLoading(true);
+      const response = await signInWithPopup(auth, googleProvider);
+      const token = await response.user.getIdToken();
+
+      await ensureCsrf();
+      await createSession(token);
+
+      // set data from the logged in account
+      setUser({
+        name: response.user.displayName,
+        email: response.user.email,
+        picture: response.user.photoURL,
+      });
+    } catch (error) {
+      setError("Login failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      setLoading(true);
+      await ensureCsrf();
+      await logoutSession();
+      setUser(null);
+      setMenuOpen(false);
+    } catch (e) {
+      setError("Logout failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSelect = (game) => {
@@ -121,9 +183,44 @@ function Header() {
           )}
         </div>
       </div>
-      <Link to="/Login" className="text-white font-bold ">
-        Log in
-      </Link>
+
+      <div className="relative" ref={menuRef}>
+        {user ? (
+          <>
+            <Button
+              onClick={() => setMenuOpen((prev) => !prev)}
+              className="rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              title={user.name || user.email}
+            >
+              <img
+                src={user.picture}
+                alt="avatar"
+                className="w-8 h-8 rounded-full inline-block"
+                title={user.email}
+              />
+            </Button>
+
+            {menuOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white text-gray-800 rounded shadow-md py-1 z-20">
+                <Button
+                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              </div>
+            )}
+          </>
+        ) : (
+          <Button
+            onClick={handleLogin}
+            loading={loading}
+            className="text-white font-bold"
+          >
+            Log in
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

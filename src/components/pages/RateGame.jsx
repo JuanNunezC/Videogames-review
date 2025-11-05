@@ -61,7 +61,11 @@ function RateGame() {
             />
           </div>
           <div className="flex justify-center items-center mt-5">
-            <Button disabled={userRating === 0} onClick={handleSubmit}>
+            <Button
+              className="text-white"
+              disabled={userRating === 0}
+              onClick={handleSubmit}
+            >
               Submit Review
             </Button>
           </div>
