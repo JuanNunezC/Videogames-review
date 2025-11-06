@@ -68,3 +68,15 @@ export async function logoutSession() {
   }
   return response.json();
 }
+
+export async function getProfile() {
+  const response = await fetch("/api/profile/", { credentials: "include" });
+
+  if (res.status === 401) return null;
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "Failed to logout session");
+  }
+  return response.json();
+}

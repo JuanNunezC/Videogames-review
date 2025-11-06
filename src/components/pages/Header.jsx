@@ -6,21 +6,22 @@ import {
   searchGames,
 } from "../../api";
 import { Link, useNavigate } from "react-router";
-import GoogleButton from "../../ui/GoogleButton";
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "../../firebase";
 import Button from "../../ui/Button";
+import { useAuth } from "../../context/AuthProvider";
+import { IconHome } from "@tabler/icons-react";
 
 function Header() {
+  const { user, loading, login, logout } = useAuth();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
   const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [user, setUser] = useState(null);
   const controllerRef = useRef(null);
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
   //close dropdown menu when clicking outside the login container
@@ -85,43 +86,6 @@ function Header() {
     setSearch(e.target.value);
   };
 
-  const handleLogin = async () => {
-    try {
-      setError("");
-      setLoading(true);
-      const response = await signInWithPopup(auth, googleProvider);
-      const token = await response.user.getIdToken();
-
-      await ensureCsrf();
-      await createSession(token);
-
-      // set data from the logged in account
-      setUser({
-        name: response.user.displayName,
-        email: response.user.email,
-        picture: response.user.photoURL,
-      });
-    } catch (error) {
-      setError("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      await ensureCsrf();
-      await logoutSession();
-      setUser(null);
-      setMenuOpen(false);
-    } catch (e) {
-      setError("Logout failed. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleSelect = (game) => {
     navigate(`/game/${game.id}`, {
       state: { name: game.name, cover_url: game.cover_url },
@@ -131,6 +95,11 @@ function Header() {
 
   return (
     <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
+      <div className="relative">
+        <Link to="/">
+          <IconHome size={25} color="white" />
+        </Link>
+      </div>
       <div className="flex-1 flex justify-center">
         <div ref={wrapperRef} className="relative w-full max-w-md">
           <span className="absolute inset-y-0 left-0 flex items-center pl-3">
@@ -204,7 +173,7 @@ function Header() {
               <div className="absolute right-0 mt-2 w-40 bg-white text-gray-800 rounded shadow-md py-1 z-20">
                 <Button
                   className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                  onClick={handleLogout}
+                  onClick={logout}
                 >
                   Logout
                 </Button>
@@ -213,7 +182,7 @@ function Header() {
           </>
         ) : (
           <Button
-            onClick={handleLogin}
+            onClick={login}
             loading={loading}
             className="text-white font-bold"
           >

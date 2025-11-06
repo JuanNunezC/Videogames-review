@@ -4,6 +4,7 @@ import { Outlet, Route, Routes } from "react-router";
 import RateGame from "./components/pages/RateGame";
 import LoginPage from "./components/auth/LoginPage";
 import Home from "./components/pages/Home";
+import { AuthProvider } from "./context/AuthProvider";
 
 function Layout() {
   return (
@@ -18,13 +19,15 @@ function Layout() {
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />}></Route>
-        <Route path="/game/:id" element={<RateGame />}></Route>
-        <Route path="/Login" element={<LoginPage />}></Route>
-      </Route>
-    </Routes>
+    <AuthProvider>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<Home />}></Route>
+          <Route path="/game/:id" element={<RateGame />}></Route>
+          <Route path="/Login" element={<LoginPage />}></Route>
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }
 
