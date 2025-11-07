@@ -68,8 +68,6 @@ export async function logoutSession() {
   }
   return response.json();
 }
-<<<<<<< Updated upstream
-=======
 
 export async function getProfile() {
   const response = await fetch("/api/profile/", { credentials: "include" });
@@ -82,4 +80,3 @@ export async function getProfile() {
   }
   return response.json();
 }
->>>>>>> Stashed changes

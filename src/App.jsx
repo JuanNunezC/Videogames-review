@@ -18,15 +18,6 @@ function Layout() {
 
 function App() {
   return (
-<<<<<<< Updated upstream
-    <Routes>
-      <Route path="/" element={<Layout />}>
-        <Route index element={<Home />}></Route>
-        <Route path="/game/:id" element={<RateGame />}></Route>
-        <Route path="/Login" element={<LoginPage />}></Route>
-      </Route>
-    </Routes>
-=======
     <AuthProvider>
       <Routes>
         <Route path="/" element={<Layout />}>
@@ -36,7 +27,6 @@ function App() {
         </Route>
       </Routes>
     </AuthProvider>
->>>>>>> Stashed changes
   );
 }
 
