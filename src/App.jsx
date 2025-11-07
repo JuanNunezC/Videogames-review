@@ -23,8 +23,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />}></Route>
-          <Route path="/game/:id" element={<RateGame />}></Route>
-          <Route path="/Login" element={<LoginPage />}></Route>
+          <Route path="game/:id" element={<RateGame />}></Route>
+          <Route path="login" element={<LoginPage />}></Route>
         </Route>
       </Routes>
     </AuthProvider>

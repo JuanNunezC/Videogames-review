@@ -72,7 +72,7 @@ export async function logoutSession() {
 export async function getProfile() {
   const response = await fetch("/api/profile/", { credentials: "include" });
 
-  if (res.status === 401) return null;
+  if (response.status === 401) return null;
 
   if (!response.ok) {
     const text = await response.text();
