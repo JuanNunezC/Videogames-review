@@ -4,6 +4,7 @@ import { Outlet, Route, Routes } from "react-router";
 import RateGame from "./components/pages/RateGame";
 import LoginPage from "./components/auth/LoginPage";
 import Home from "./components/pages/Home";
+import { AuthProvider } from "./context/AuthProvider";
 
 function Layout() {
   return (
