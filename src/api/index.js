@@ -68,3 +68,18 @@ export async function logoutSession() {
   }
   return response.json();
 }
+<<<<<<< Updated upstream
+=======
+
+export async function getProfile() {
+  const response = await fetch("/api/profile/", { credentials: "include" });
+
+  if (response.status === 401) return null;
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(text || "Failed to logout session");
+  }
+  return response.json();
+}
+>>>>>>> Stashed changes
