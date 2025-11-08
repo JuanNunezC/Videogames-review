@@ -1,13 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  createSession,
-  ensureCsrf,
-  logoutSession,
-  searchGames,
-} from "../../api";
+import { searchGames } from "../../api";
 import { Link, useNavigate } from "react-router";
-import { signInWithPopup } from "firebase/auth";
-import { auth, googleProvider } from "../../firebase";
 import Button from "../../ui/Button";
 import { useAuth } from "../../context/AuthProvider";
 import { IconHome } from "@tabler/icons-react";
@@ -70,7 +63,6 @@ function Header() {
           });
           setGames(results);
         } catch (err) {
-          // ignora cancelaciones; limpia en otros errores
           if (err?.name !== "AbortError") setGames([]);
         }
       })();

@@ -70,13 +70,12 @@ export async function logoutSession() {
 }
 
 export async function getProfile() {
-  const response = await fetch("/api/profile/", { credentials: "include" });
-
-  if (response.status === 401) return null;
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(text || "Failed to logout session");
+  try {
+    const res = await fetch("/api/profile/", { credentials: "include" });
+    if (res.status === 401) return null;
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
   }
-  return response.json();
 }
