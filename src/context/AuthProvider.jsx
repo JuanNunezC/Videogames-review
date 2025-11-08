@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { createSession, ensureCsrf, getProfile, logoutSession } from "../api";
-import { signInWithPopup, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "../firebase";
 
 const AuthContext = createContext(null);
@@ -30,6 +30,20 @@ export function AuthProvider({ children }) {
     })();
   }, []);
 
+  // Synch login function using Firebase and backend session
+  // This prevents issues when the user logs out and still has a session cookie when entering the site again
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
+      const profile = await getProfile();
+
+      if (!firebaseUser) {
+        setUser(null);
+        return;
+      }
+    });
+    return () => unsub();
+  }, []);
+
   const login = async () => {
     setLoading(true);
     try {
@@ -53,9 +67,12 @@ export function AuthProvider({ children }) {
     try {
       await ensureCsrf();
       await logoutSession();
-      await signOut(auth);
-      setUser(null);
+    } catch (e) {
     } finally {
+      try {
+        await signOut(auth);
+      } catch {}
+      setUser(null);
       setLoading(false);
     }
   };

@@ -66,10 +66,10 @@ function RateGame() {
         gameName: name,
         rating: userRating,
         user,
+        coverUrl: cover,
       });
-      console.log("Review guardada/actualizada");
     } catch (e) {
-      console.error("Error al guardar review:", e); // Verás PERMISSION_DENIED si reglas/UID no coinciden
+      throw new Error("Error submitting review: " + e.message);
     }
   };
 
