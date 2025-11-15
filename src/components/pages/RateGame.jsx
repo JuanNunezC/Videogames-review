@@ -5,6 +5,7 @@ import StarRating from "../../ui/StarRating";
 import Button from "../../ui/Button";
 import { useAuth } from "../../context/AuthProvider";
 import { getUserReview, submitReview } from "../../api/reviews";
+import toast from "react-hot-toast";
 
 function RateGame() {
   const { id } = useParams();
@@ -68,8 +69,9 @@ function RateGame() {
         user,
         coverUrl: cover,
       });
+      toast.success("Review Submitted");
     } catch (e) {
-      throw new Error("Error submitting review: " + e.message);
+      toast.error("Error submitting review");
     }
   };
 
