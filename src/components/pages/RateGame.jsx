@@ -95,7 +95,7 @@ function RateGame() {
           </div>
           <div className="flex justify-center items-center mt-5">
             <Button
-              className="text-white"
+              className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:bg-blue-900 text-white font-semibold px-6 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
               disabled={!user || userRating === 0}
               onClick={handleSubmit}
             >

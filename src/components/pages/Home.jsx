@@ -3,6 +3,7 @@ import { getAllReviews, aggregateByGame } from "../../api/reviews";
 import { Link } from "react-router";
 import StarRating from "../../ui/StarRating";
 
+// Round to nearest 0.5 ex 3.24 to 3.0, 3.25 to 3.5,etc.
 function roundToHalf(n) {
   return Math.round((Number(n) || 0) * 2) / 2;
 }
@@ -11,6 +12,7 @@ function Home() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // On mount, fetch all reviews and sorts by average rating
   useEffect(() => {
     (async () => {
       try {

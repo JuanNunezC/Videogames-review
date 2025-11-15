@@ -88,8 +88,17 @@ function Header() {
   return (
     <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
       <div className="relative">
-        <Link to="/">
-          <IconHome size={25} color="white" />
+        <Link
+          to="/"
+          aria-label="Home"
+          className="group flex items-center justify-center w-10 h-10 rounded-full
+                     bg-gray-700 hover:bg-gray-600 active:bg-gray-500
+                     transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          <IconHome
+            size={25}
+            className="text-white group-hover:text-white group-active:text-white"
+          />
         </Link>
       </div>
       <div className="flex-1 flex justify-center">
@@ -150,7 +159,7 @@ function Header() {
           <>
             <Button
               onClick={() => setMenuOpen((prev) => !prev)}
-              className="rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="rounded-full bg-gray-700 hover:bg-gray-600 active:bg-gray-500 p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
               title={user.name || user.email}
             >
               <img
@@ -162,9 +171,9 @@ function Header() {
             </Button>
 
             {menuOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-white text-gray-800 rounded shadow-md py-1 z-20">
+              <div className="absolute right-0 mt-2 w-40 bg-gray-900 text-gray-100 rounded shadow-md py-1 z-20">
                 <Button
-                  className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                  className="w-full text-left px-4 py-2 bg-gray-900 hover:bg-gray-700 active:bg-gray-600 transition-colors rounded"
                   onClick={logout}
                 >
                   Logout
@@ -176,7 +185,7 @@ function Header() {
           <Button
             onClick={login}
             loading={loading}
-            className="text-white font-bold"
+            className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:bg-blue-900 text-white font-semibold px-5 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
             Log in
           </Button>
