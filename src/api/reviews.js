@@ -1,5 +1,13 @@
 import { db } from "../firebase";
-import { doc, setDoc, getDoc, collection, getDocs } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  orderBy,
+} from "firebase/firestore";
 
 function makeReviewId(gameId, uid) {
   return `${String(gameId)}_${uid}`;
@@ -67,4 +75,85 @@ export function aggregateByGame(reviews) {
     average: Number((g.sum / g.count).toFixed(2)),
     count: g.count,
   }));
+}
+
+// Order Reviews from A-Z
+export async function getReviewsByNameAsc(db) {
+  const query = query(collection(db, "reviews"), orderBy("game_name", "asc"));
+  const res = await getDocs(query);
+  return res.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// Order reviews from Z-A
+export async function getReviewsByNameDesc(db) {
+  const q = query(collection(db, "reviews"), orderBy("game_name", "desc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// Ordenar reviews from high to low rating
+export async function getReviewsByRatingAsc(db) {
+  const q = query(collection(db, "reviews"), orderBy("star_rating", "asc"));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+// Ordenar reviews from low to high rating
+export async function getReviewsByRatingDesc(db) {
+  const query = query(
+    collection(db, "reviews"),
+    orderBy("star_rating", "desc")
+  );
+  const res = await getDocs(query);
+  return res.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function getReviewsSorted(db, mode) {
+  let field, dir;
+  switch (mode) {
+    case "name_asc":
+      field = "game_name";
+      dir = "asc";
+      break;
+    case "name_desc":
+      field = "game_name";
+      dir = "desc";
+      break;
+    case "rating_asc":
+      field = "star_rating";
+      dir = "asc";
+      break;
+    default:
+      field = "star_rating";
+      dir = "desc";
+  }
+  const q = query(collection(db, "reviews"), orderBy(field, dir));
+  const snap = await getDocs(q);
+  return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+}
+
+export async function getGamesSorted(mode = "rating_desc") {
+  // Fetch all reviews
+  const reviews = await getAllReviews();
+  // group by game and calculate average ratings
+  const games = aggregateByGame(reviews);
+
+  switch (mode) {
+    case "name_asc":
+      return games.sort((a, b) =>
+        a.game_name.localeCompare(b.game_name, undefined, {
+          sensitivity: "base",
+        })
+      );
+    case "name_desc":
+      return games.sort((a, b) =>
+        b.game_name.localeCompare(a.game_name, undefined, {
+          sensitivity: "base",
+        })
+      );
+    case "rating_asc":
+      return games.sort((a, b) => a.average - b.average);
+    default: // rating_desc
+      return games.sort((a, b) => b.average - a.average);
+  }
 }

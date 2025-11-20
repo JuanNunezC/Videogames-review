@@ -61,18 +61,20 @@ function RateGame() {
   // submit user review to database
   const handleSubmit = async () => {
     if (!user || userRating === 0) return;
-    try {
-      await submitReview({
+    await toast.promise(
+      submitReview({
         gameId: id,
         gameName: name,
         rating: userRating,
         user,
         coverUrl: cover,
-      });
-      toast.success("Review Submitted");
-    } catch (e) {
-      toast.error("Error submitting review");
-    }
+      }),
+      {
+        loading: "Submitting review...",
+        success: "Review submitted successfully!",
+        error: "Error submitting review.",
+      }
+    );
   };
 
   return (
