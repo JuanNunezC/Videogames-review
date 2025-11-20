@@ -1,6 +1,11 @@
+const Base = (import.meta.env.VITE_API_BASE_URL || "/api/").replace(
+  /\/?$/,
+  "/"
+);
+
 export async function searchGames(query, { signal } = {}) {
   const q = encodeURIComponent(query.trim());
-  const response = await fetch(`/api/search-games/?query=${q}`, { signal });
+  const response = await fetch(`${Base}search-games/?query=${q}`, { signal });
   if (!response.ok) {
     const text = await response.text();
     throw new Error("API request failed");
@@ -10,7 +15,7 @@ export async function searchGames(query, { signal } = {}) {
 }
 
 export async function GetGameById(id, { signal } = {}) {
-  const response = await fetch(`/api/game/${id}/`, { signal });
+  const response = await fetch(`${Base}game/${id}/`, { signal });
 
   if (!response.ok) {
     const text = await response.text();
@@ -31,12 +36,12 @@ function getCsrf() {
 }
 
 export async function ensureCsrf() {
-  await fetch("/api/auth/csrf/", { credentials: "include" });
+  await fetch(`${Base}auth/csrf/`, { credentials: "include" });
 }
 
 export async function createSession(token) {
   const csrfToken = getCsrf();
-  const response = await fetch("/api/auth/session/", {
+  const response = await fetch(`${Base}auth/session/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -54,7 +59,7 @@ export async function createSession(token) {
 
 export async function logoutSession() {
   const csrfToken = getCsrf();
-  const response = await fetch("/api/auth/logout/", {
+  const response = await fetch(`${Base}auth/logout/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -71,7 +76,7 @@ export async function logoutSession() {
 
 export async function getProfile() {
   try {
-    const res = await fetch("/api/profile/", { credentials: "include" });
+    const res = await fetch(`${Base}profile/`, { credentials: "include" });
     if (res.status === 401) return null;
     if (!res.ok) return null;
     return await res.json();
