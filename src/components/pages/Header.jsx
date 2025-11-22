@@ -3,7 +3,7 @@ import { searchGames } from "../../api";
 import { Link, useNavigate } from "react-router";
 import Button from "../../ui/Button";
 import { useAuth } from "../../context/AuthProvider";
-import { IconHome } from "@tabler/icons-react";
+import { IconHome, IconUser } from "@tabler/icons-react";
 
 function Header() {
   const { user, loading, login, logout } = useAuth();
@@ -86,112 +86,147 @@ function Header() {
   };
 
   return (
-    <div className="flex items-center justify-between w-full px-8 py-4 bg-gray-800">
-      <div className="relative">
+    <>
+      <div className="sticky top-0 z-50 flex items-center justify-between w-full px-8 py-4 bg-gray-800">
         <Link
           to="/"
           aria-label="Home"
-          className="group flex items-center justify-center w-10 h-10 rounded-full
-                     bg-gray-700 hover:bg-gray-600 active:bg-gray-500
-                     transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="hidden sm:flex items-center justify-center w-10 h-10 rounded-full
+          bg-gray-700 hover:bg-gray-600 active:bg-gray-500
+          transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <IconHome
             size={25}
             className="text-white group-hover:text-white group-active:text-white"
           />
         </Link>
-      </div>
-      <div className="flex-1 flex justify-center">
-        <div ref={wrapperRef} className="relative w-full max-w-md">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <svg
-              className="h-5 w-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </span>
-          <input
-            type="text"
-            value={search}
-            onChange={handleChange}
-            placeholder="Searchbar..."
-            maxLength={60}
-            className="bg-gray-700 text-white pl-10 px-4 py-4 placeholder-gray-400 w-full rounded-full"
-          />
-          {games.length > 0 && (
-            <ul className="absolute z-10 bg-gray-800 w-full mt-2 rounded shadow-lg max-h-48 overflow-y-auto">
-              {games.map((game) => (
-                <li
-                  key={game.id}
-                  className="h-16 p-2 text-white hover:bg-gray-700
-                  cursor-pointer flex items-center gap-3"
-                >
-                  <Link
-                    to={`/game/${game.id}`}
-                    state={{ name: game.name, cover_url: game.cover_url }}
-                    onClick={() => setGames([])} // closes the dropdown
-                    className="flex items-center gap-3 h-16 p-2 text-white hover:bg-gray-700 w-full"
+        <div className="flex-1 flex justify-center">
+          <div ref={wrapperRef} className="relative w-full max-w-md">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+              <svg
+                className="h-5 w-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </span>
+            <input
+              type="text"
+              value={search}
+              onChange={handleChange}
+              placeholder="Search Games..."
+              maxLength={60}
+              className="bg-gray-700 text-white pl-10 px-4 py-4 placeholder-gray-400 w-full rounded-full"
+            />
+            {games.length > 0 && (
+              <ul className="absolute z-10 bg-gray-800 w-full mt-2 rounded shadow-lg max-h-48 overflow-y-auto">
+                {games.map((game) => (
+                  <li
+                    key={game.id}
+                    className="h-16 p-2 text-white hover:bg-gray-700
+                cursor-pointer flex items-center gap-3"
                   >
-                    {game.cover_url && (
-                      <img
-                        src={game.cover_url}
-                        alt={game.name}
-                        className="w-10 h-14 object-cover rounded"
-                        loading="lazy"
-                      />
-                    )}
-                    <span>{game.name}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+                    <Link
+                      to={`/game/${game.id}`}
+                      state={{ name: game.name, cover_url: game.cover_url }}
+                      onClick={() => setGames([])} // closes the dropdown
+                      className="flex items-center gap-3 h-16 p-2 text-white hover:bg-gray-700 w-full"
+                    >
+                      {game.cover_url && (
+                        <img
+                          src={game.cover_url}
+                          alt={game.name}
+                          className="w-5 h-10 sm:w-8 sm:h-12 lg:w-10 lg:h-14 xl:w-12 xl:h-16 object-cover rounded"
+                          loading="lazy"
+                        />
+                      )}
+                      <span>{game.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/*Desktop user button */}
+        <div className="hidden sm:block relative" ref={menuRef}>
+          {user ? (
+            <>
+              <Button
+                onClick={() => setMenuOpen((prev) => !prev)}
+                className="rounded-full bg-gray-700 hover:bg-gray-600 active:bg-gray-500 p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                title={user.name || user.email}
+              >
+                <img
+                  src={user.picture}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full inline-block"
+                  title={user.email}
+                />
+              </Button>
+
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-gray-900 text-gray-100 rounded shadow-md py-1 z-20">
+                  <Button
+                    className="w-full text-left px-4 py-2 bg-gray-900 hover:bg-gray-700 active:bg-gray-600 transition-colors rounded"
+                    onClick={logout}
+                  >
+                    Logout
+                  </Button>
+                </div>
+              )}
+            </>
+          ) : (
+            <Button
+              onClick={login}
+              loading={loading}
+              className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:bg-blue-900 text-white font-semibold px-5 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+            >
+              Log in
+            </Button>
           )}
         </div>
       </div>
 
-      <div className="relative" ref={menuRef}>
+      {/* Mobile bottom bar*/}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-gray-900/95 backdrop-blur px-6 py-2 flex items-center justify-between border-t border-gray-700 safe-bottom">
+        <Link
+          to="/"
+          className="flex flex-col items-center text-xs text-white"
+          aria-label="Home"
+        >
+          <IconHome size={24} />
+          <span className="mt-0.5">Home</span>
+        </Link>
         {user ? (
-          <>
-            <Button
-              onClick={() => setMenuOpen((prev) => !prev)}
-              className="rounded-full bg-gray-700 hover:bg-gray-600 active:bg-gray-500 p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
-              title={user.name || user.email}
-            >
-              <img
-                src={user.picture}
-                alt="avatar"
-                className="w-8 h-8 rounded-full inline-block"
-                title={user.email}
-              />
-            </Button>
-
-            {menuOpen && (
-              <div className="absolute right-0 mt-2 w-40 bg-gray-900 text-gray-100 rounded shadow-md py-1 z-20">
-                <Button
-                  className="w-full text-left px-4 py-2 bg-gray-900 hover:bg-gray-700 active:bg-gray-600 transition-colors rounded"
-                  onClick={logout}
-                >
-                  Logout
-                </Button>
-              </div>
-            )}
-          </>
-        ) : (
-          <Button
-            onClick={login}
-            loading={loading}
-            className="bg-blue-600 hover:bg-blue-500 active:bg-blue-700 disabled:bg-blue-900 text-white font-semibold px-5 py-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-400"
+          <button
+            onClick={logout}
+            className="flex flex-col items-center text-xs text-white"
+            title="Logout"
           >
-            Log in
-          </Button>
+            <img
+              src={user.picture}
+              alt="avatar"
+              className="w-8 h-8 rounded-full border border-gray-600"
+            />
+            <span className="mt-0.5">Logout</span>
+          </button>
+        ) : (
+          <button
+            onClick={login}
+            className="flex flex-col items-center text-xs text-white"
+          >
+            <IconUser size={24} />
+            <span className="mt-0.5">Log in</span>
+          </button>
         )}
       </div>
-    </div>
+    </>
   );
 }
 
