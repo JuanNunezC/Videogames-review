@@ -72,11 +72,11 @@ function Home() {
 
   return (
     <div className="w-full max-w-2xl mx-auto text-white">
-      <h1 className="mt-25 text-2xl font-bold mb-4 text-center">
+      <h1 className="mt-25 text-2xl font-bold mb-8 text-center">
         Game Averages
       </h1>
 
-      <div className="flex justify-center mb-4 relative" ref={dropDownRef}>
+      <div className="flex justify-start mb-4 relative" ref={dropDownRef}>
         <button
           onClick={() => setOpen((o) => !o)}
           className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg text-sm shadow"
