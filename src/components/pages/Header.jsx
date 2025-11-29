@@ -8,6 +8,7 @@ import { IconHome, IconUser } from "@tabler/icons-react";
 function Header() {
   const { user, loading, login, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
@@ -16,8 +17,9 @@ function Header() {
   const wrapperRef = useRef(null);
   const navigate = useNavigate();
   const menuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
-  //close dropdown menu when clicking outside the login container
+  //close desktop dropdown menu when clicking outside the login container
   useEffect(() => {
     function onDocClick(e) {
       if (!menuRef.current) return;
@@ -27,6 +29,22 @@ function Header() {
     document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, []);
+
+  //closes mobile dropdown menu when clicking outside the login container
+  useEffect(() => {
+    function onDocClick(e) {
+      if (!mobileMenuRef.current) return;
+      if (!mobileMenuRef.current.contains(e.target)) setMobileMenuOpen(false);
+    }
+    document.addEventListener("mousedown", onDocClick);
+    return () => document.removeEventListener("mousedown", onDocClick);
+  }, []);
+
+  //close menus on user change (login/logout), prevents dropdown from opening open
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setMenuOpen(false);
+  }, [user]);
 
   //close search results or dropdown when clicking outside the input
   useEffect(() => {
@@ -162,12 +180,20 @@ function Header() {
                 className="rounded-full bg-gray-700 hover:bg-gray-600 active:bg-gray-500 p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
                 title={user.name || user.email}
               >
-                <img
-                  src={user.picture}
-                  alt="avatar"
-                  className="w-8 h-8 rounded-full inline-block"
-                  title={user.email}
-                />
+                {/* it render either the icon of the email account or a generic IconUser */}
+                {user.picture ? (
+                  <img
+                    src={user.picture}
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full inline-block"
+                    title={user.email}
+                    onError={(e) => {
+                      e.currentTarget.style.display = "none";
+                    }}
+                  />
+                ) : (
+                  <IconUser size={24} />
+                )}
               </Button>
 
               {menuOpen && (
@@ -203,19 +229,39 @@ function Header() {
           <IconHome size={24} />
           <span className="mt-0.5">Home</span>
         </Link>
+
         {user ? (
-          <button
-            onClick={logout}
-            className="flex flex-col items-center text-xs text-white"
-            title="Logout"
-          >
-            <img
-              src={user.picture}
-              alt="avatar"
-              className="w-8 h-8 rounded-full border border-gray-600"
-            />
-            <span className="mt-0.5">Logout</span>
-          </button>
+          <div className="relative" ref={mobileMenuRef}>
+            <button
+              onClick={() => setMobileMenuOpen((p) => !p)}
+              className="flex flex-col items-center text-xs text-white"
+              title={user.name}
+            >
+              {user.picture ? (
+                <img
+                  src={user.picture}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full border border-gray-600"
+                  onError={(e) => {
+                    e.currentTarget.style.display = "none";
+                  }}
+                />
+              ) : (
+                <IconUser size={24} />
+              )}
+            </button>
+
+            {mobileMenuOpen && (
+              <div className="absolute right-0 bottom-12 w-40 bg-gray-900 text-gray-100 rounded shadow-md py-1 z-20">
+                <Button
+                  className="w-full text-left px-4 py-2 bg-gray-900 hover:bg-gray-700 active:bg-gray-600 transition-colors rounded"
+                  onClick={logout}
+                >
+                  Logout
+                </Button>
+              </div>
+            )}
+          </div>
         ) : (
           <button
             onClick={login}
