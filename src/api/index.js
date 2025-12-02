@@ -1,7 +1,8 @@
-const Base = (import.meta.env.VITE_API_BASE_URL || "/api/").replace(
-  /\/?$/,
-  "/"
-);
+const Base = (
+  import.meta.env.MODE === "production"
+    ? import.meta.env.VITE_API_BASE_URL_DEPLOYMENT
+    : import.meta.env.VITE_API_BASE_URL
+).replace(/\/?$/, "/");
 
 export async function searchGames(query, { signal } = {}) {
   const q = encodeURIComponent(query.trim());
