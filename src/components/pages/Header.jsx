@@ -9,6 +9,8 @@ function Header() {
   const { user, loading, login, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [avatarError, setAvatarError] = useState(false);
+  const [mobileAvatarError, setMobileAvatarError] = useState(false);
 
   const [search, setSearch] = useState("");
   const [error, setError] = useState("");
@@ -181,15 +183,13 @@ function Header() {
                 title={user.name || user.email}
               >
                 {/* it render either the icon of the email account or a generic IconUser */}
-                {user.picture ? (
+                {!avatarError && user.picture ? (
                   <img
                     src={user.picture}
                     alt="avatar"
                     className="w-8 h-8 rounded-full inline-block"
                     title={user.email}
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
+                    onError={() => setAvatarError(true)}
                   />
                 ) : (
                   <IconUser size={24} />
@@ -237,14 +237,12 @@ function Header() {
               className="flex flex-col items-center text-xs text-white"
               title={user.name}
             >
-              {user.picture ? (
+              {!mobileAvatarError && user.picture ? (
                 <img
                   src={user.picture}
                   alt="avatar"
                   className="w-8 h-8 rounded-full border border-gray-600"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
+                  onError={() => setMobileAvatarError(true)}
                 />
               ) : (
                 <IconUser size={24} />
