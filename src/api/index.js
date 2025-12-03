@@ -4,6 +4,19 @@ const Base = (
     : import.meta.env.VITE_API_BASE_URL
 ).replace(/\/?$/, "/");
 
+let CSRF_TOKEN = null;
+
+function readCookieCsrf() {
+  // Read CSRF token from cookie locally
+  return (
+    document.cookie
+      .split(";")
+      .map((c) => c.trim())
+      .find((c) => c.startsWith("csrftoken="))
+      ?.split("=")[1] || ""
+  );
+}
+
 export async function searchGames(query, { signal } = {}) {
   const q = encodeURIComponent(query.trim());
   const response = await fetch(`${Base}search-games/?query=${q}`, { signal });
@@ -25,19 +38,16 @@ export async function GetGameById(id, { signal } = {}) {
   const data = await response.json();
   return data;
 }
-
 function getCsrf() {
-  return (
-    document.cookie
-      .split(";")
-      .map((c) => c.trim())
-      .find((c) => c.startsWith("csrftoken="))
-      ?.split("=")[1] || ""
-  );
+  return CSRF_TOKEN || readCookieCsrf(); // prefer JSON token otherwise fallback to cookie
 }
 
 export async function ensureCsrf() {
-  await fetch(`${Base}auth/csrf/`, { credentials: "include" });
+  const url = `${Base}auth/csrf/`;
+  const res = await fetch(url, { credentials: "include" });
+  const data = await res.json().catch(() => ({}));
+  if (data && data.csrfToken) CSRF_TOKEN = data.csrfToken; // use JSON token in prod
+  const cookieCsrf = readCookieCsrf();
 }
 
 export async function createSession(token) {
