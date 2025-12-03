@@ -41,6 +41,7 @@ export async function ensureCsrf() {
 }
 
 export async function createSession(token) {
+  await ensureCsrf();
   const csrfToken = getCsrf();
   const response = await fetch(`${Base}auth/session/`, {
     method: "POST",
@@ -59,6 +60,7 @@ export async function createSession(token) {
 }
 
 export async function logoutSession() {
+  await ensureCsrf();
   const csrfToken = getCsrf();
   const response = await fetch(`${Base}auth/logout/`, {
     method: "POST",
