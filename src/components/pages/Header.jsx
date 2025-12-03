@@ -3,7 +3,7 @@ import { searchGames } from "../../api";
 import { Link, useNavigate } from "react-router";
 import Button from "../../ui/Button";
 import { useAuth } from "../../context/AuthProvider";
-import { IconHome, IconUser } from "@tabler/icons-react";
+import { IconHome, IconUser, IconUserCircle } from "@tabler/icons-react";
 
 function Header() {
   const { user, loading, login, logout } = useAuth();
@@ -192,7 +192,7 @@ function Header() {
                     onError={() => setAvatarError(true)}
                   />
                 ) : (
-                  <IconUser size={24} />
+                  <IconUserCircle size={24} />
                 )}
               </Button>
 
@@ -245,7 +245,7 @@ function Header() {
                   onError={() => setMobileAvatarError(true)}
                 />
               ) : (
-                <IconUser size={24} />
+                <IconUserCircle size={24} />
               )}
             </button>
 
