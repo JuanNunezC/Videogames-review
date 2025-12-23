@@ -48,7 +48,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const response = await signInWithPopup(auth, googleProvider);
-      const token = await response.user.getIdToken();
+      const token = await response.user.getIdToken(true); // forces refresh
       await ensureCsrf();
       await createSession(token);
       setUser({
